@@ -1,0 +1,89 @@
+import socket
+import json
+import threading
+
+def test_TCPserver():
+    """
+    Test the TCP server functionality by sending and receiving messages.
+
+    This function contains two test cases:
+    1. Test receiving and sending a single message.
+    2. Test receiving and sending multiple messages.
+    """
+    def test_case_1():
+        ...
+    
+    def test_case_2():
+        ...
+    
+    # Run the test cases
+    test_case_1()
+    test_case_2()
+def test_TCPserver():
+    # Test case 1: Test receiving and sending a single message
+    def test_case_1():
+        ipv4 = '127.0.0.1'
+        port = 5000
+        peerid = 'peer1'
+        messages = ['Hello, World!']
+        
+        # Start the server in a separate thread
+        server_thread = threading.Thread(target=TCPserver, args=(ipv4, port, peerid, messages))
+        server_thread.start()
+        
+        # Create a client socket and connect to the server
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((ipv4, port))
+        
+        # Send a message to the server
+        message = {'data': 'Test message'}
+        client_socket.send(json.dumps(message).encode())
+        
+        # Receive the response from the server
+        response = client_socket.recv(1024).decode()
+        response = json.loads(response)
+        
+        # Close the client socket
+        client_socket.close()
+        
+        # Stop the server thread
+        server_thread.join()
+        
+        # Assert that the response is correct
+        assert response['status'] == 'ok'
+        assert response['messages'] == messages
+    
+    # Test case 2: Test receiving and sending multiple messages
+    def test_case_2():
+        ipv4 = '127.0.0.1'
+        port = 5000
+        peerid = 'peer1'
+        messages = ['Hello', 'World', 'Test']
+        
+        # Start the server in a separate thread
+        server_thread = threading.Thread(target=TCPserver, args=(ipv4, port, peerid, messages))
+        server_thread.start()
+        
+        # Create a client socket and connect to the server
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((ipv4, port))
+        
+        # Send multiple messages to the server
+        for message in messages:
+            client_socket.send(json.dumps({'data': message}).encode())
+            response = client_socket.recv(1024).decode()
+            response = json.loads(response)
+            assert response['status'] == 'ok'
+        
+        # Close the client socket
+        client_socket.close()
+        
+        # Stop the server thread
+        server_thread.join()
+    
+    # Run the test cases
+    test_case_1()
+    test_case_2()
+
+# Run the tests
+test_TCPserver()
